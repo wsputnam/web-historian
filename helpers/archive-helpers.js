@@ -32,12 +32,16 @@ exports.readListOfUrls = function(callback) {
   // input: callback with urls as inputs (string format?)
 
   // output: an array of urls?
-  fs.readFile('./web/archives/sites.txt', function(err, data) {
+  fs.readFile('./web/archives/sites.txt', 'utf8', function(err, data) {
     //console.log('readlistdata:', data.toString());
 
     var dataArr = data.toString().split('\n');
-    console.log(dataArr)
-    callback(dataArr)
+    for (var i = 0; i < dataArr.length; i++) {
+      if (dataArr[i] === '') {
+        dataArr.splice(i, 1);
+      }
+    }
+    callback(dataArr);
     // res.writeHead(200, {'Content-Type': 'text/html'});
     // //console.log('req', res);
     // res.write(data);
@@ -62,15 +66,15 @@ exports.isUrlInList = function(url, callback) { // <-------------------- we chea
   //   console.log('error');
   // }
 //---------------------------------------------------
-  fs.readFile('./web/archives/sites.txt', 'utf8', function(err, contents) {
-
+  fs.readFile(path.join(__dirname, '../web/archives/sites.txt'), 'utf8', function(err, contents) {
+    console.log('error', err);
     var arr = contents.split('\n');
-    console.log(arr.includes(url));
-    if (arr.includes(url)) {
-      callback(true);
-    } else {
+    console.log('url exists:', _.indexOf(arr, url) === -1, 'arr: ', arr, 'url: ', url);
+    if (_.indexOf(arr, url) === -1) {
       callback(false);
       console.log('error');
+    } else {
+      callback(true);
     }
 
   });
@@ -80,11 +84,22 @@ exports.addUrlToList = function(url, callback) {
   //given a url from index.html inupt
   //add url to list of sites that worker function to retrieve
   //console.log(url, callback)
-  fs.appendFile('./web/archives/sites.txt', url, callback());
+  fs.appendFile('./web/archives/sites.txt', url + '\n', callback());
 };
 
 exports.isUrlArchived = function(url, callback) {
   //look to see if the site is archieved
+  fs.readFile(path.join(__dirname, '../archives/sites/sites.txt'), 'utf8', function(err, contents) {
+    var arr = contents.split('\n');
+    console.log(arr);
+    console.log(_.indexOf(arr, url) === -1);
+    if (_.indexOf(arr, url) === -1) {
+      callback(false);
+      console.log('error');
+    } else {
+      callback(true);
+    }
+  });
 };
 
 exports.downloadUrls = function(urls) {

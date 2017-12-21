@@ -37,15 +37,22 @@ exports.handleRequest = function (req, res) {
     //save URL from input, stringify
     //insert into stringified URL
     req.on('data', function(chunk) {
-      fs.appendFile('./web/archives/sites.txt', '\n' + chunk.toString().slice(4) + '\n', function (err) {
-        console.log(chunk.toString().slice(4));
+      fs.appendFile('./archives/sites.txt', chunk.toString().slice(4) + '\n', function (err) {
         
         if (err) {
           throw err;
+          res.end('ERROR 404');
         } else {
           res.writeHead(302, {'Content-Type': 'text/html'});
           console.log('Saved!');
-          res.end();
+          // if site exists in sites, link to it
+          // else, link to loading.html
+          fs.readFile(path.join(__dirname, './public/loading.html'), function(err, data) {
+            //console.log('data:', data, 'err: ', err)
+            res.write(data);
+            res.end();
+          });
+          // res.end('Our robots are currently archiving the site you requested. Please check back soon for a freshly embalmed copy!');
         }
       });
     });
