@@ -33,32 +33,54 @@ exports.readListOfUrls = function(callback) {
 
   // output: an array of urls?
   fs.readFile('./web/archives/sites.txt', function(err, data) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    //console.log('req', res);
-    res.write(data);
-    res.end();
+    //console.log('readlistdata:', data.toString());
+
+    var dataArr = data.toString().split('\n');
+    console.log(dataArr)
+    callback(dataArr)
+    // res.writeHead(200, {'Content-Type': 'text/html'});
+    // //console.log('req', res);
+    // res.write(data);
+    // res.end();
   });
 };
 
-exports.isUrlInList = function(url, callback) {
+exports.isUrlInList = function(url, callback) { // <-------------------- we cheated
   //look through list of for given url 
   //return true if url exists
   //else false
-  fs.open('./web/archives/sites.txt', function(err, data) {
+  //fs.open('./web/archives/sites.txt', function(err, data) {
     //console.log('req', res);
-    fs.exists(url, function() {
-      if (exists) {
-        callback(true);
-      } else {
-        callback(false);
-      }
-    });
+
+//---------------------------------------------------
+  // var body = fs.readFileSync('./web/archives/sites.txt').toString();
+  // var arr = body.split('\n');
+  // if (arr.includes(url)) {
+  //   callback(false);
+  // } else {
+  //   callback(true);
+  //   console.log('error');
+  // }
+//---------------------------------------------------
+  fs.readFile('./web/archives/sites.txt', 'utf8', function(err, contents) {
+
+    var arr = contents.split('\n');
+    console.log(arr.includes(url));
+    if (arr.includes(url)) {
+      callback(true);
+    } else {
+      callback(false);
+      console.log('error');
+    }
+
   });
 };
 
 exports.addUrlToList = function(url, callback) {
   //given a url from index.html inupt
   //add url to list of sites that worker function to retrieve
+  //console.log(url, callback)
+  fs.appendFile('./web/archives/sites.txt', url, callback());
 };
 
 exports.isUrlArchived = function(url, callback) {

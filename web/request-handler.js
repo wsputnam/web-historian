@@ -14,8 +14,10 @@ exports.handleRequest = function (req, res) {
 
   // if req.url pathname is /, do this
     var testResult = req.url.indexOf('.') === -1;
-    console.log('TEST', testResult);
-    
+    if (req.url.indexOf('.') === -1 && req.url !== '/') {
+      res.writeHead(404);
+      res.end();
+    }
     if (req.url === '/') {
       fs.readFile('./web/public/index.html', function(err, data) {
         res.writeHead(200, {'Content-Type': 'text/html'});
@@ -29,23 +31,23 @@ exports.handleRequest = function (req, res) {
         res.end();
       });
     } 
-    if (req.url.indexOf('.') === -1 && req.url !== '/') {
-      res.writeHead(404);
-      console.log('INSIDE');
-      res.end('404 ERROR');
-    }
         
 
   } else if (req.method === 'POST' /*conditon for sending to the server*/) {
     //save URL from input, stringify
     //insert into stringified URL
-    fs.appendFile('./web/archives/sites.txt', req.url + '/n', function (err) {
-      //console.log('url: ', req.url);
-      if (err) {
-        throw err;
-      } else {
-        console.log('Saved!');
-      }
+    req.on('data', function(chunk) {
+      fs.appendFile('./web/archives/sites.txt', '\n' + chunk.toString().slice(4) + '\n', function (err) {
+        console.log(chunk.toString().slice(4));
+        
+        if (err) {
+          throw err;
+        } else {
+          res.writeHead(302, {'Content-Type': 'text/html'});
+          console.log('Saved!');
+          res.end();
+        }
+      });
     });
   }
 };
