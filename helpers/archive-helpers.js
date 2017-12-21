@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -32,7 +33,7 @@ exports.readListOfUrls = function(callback) {
   // input: callback with urls as inputs (string format?)
 
   // output: an array of urls?
-  fs.readFile('./web/archives/sites.txt', 'utf8', function(err, data) {
+  fs.readFile(exports.paths.list, 'utf8', function(err, data) {
     //console.log('readlistdata:', data.toString());
 
     var dataArr = data.toString().split('\n');
@@ -66,10 +67,10 @@ exports.isUrlInList = function(url, callback) { // <-------------------- we chea
   //   console.log('error');
   // }
 //---------------------------------------------------
-  fs.readFile(path.join(__dirname, '../web/archives/sites.txt'), 'utf8', function(err, contents) {
+  fs.readFile(exports.paths.list, 'utf8', function(err, contents) {
     console.log('error', err);
     var arr = contents.split('\n');
-    console.log('url exists:', _.indexOf(arr, url) === -1, 'arr: ', arr, 'url: ', url);
+    //console.log('url exists:', _.indexOf(arr, url) === -1, 'arr: ', arr, 'url: ', url);
     if (_.indexOf(arr, url) === -1) {
       callback(false);
       console.log('error');
@@ -84,27 +85,48 @@ exports.addUrlToList = function(url, callback) {
   //given a url from index.html inupt
   //add url to list of sites that worker function to retrieve
   //console.log(url, callback)
-  fs.appendFile('./web/archives/sites.txt', url + '\n', callback());
+  fs.appendFile(exports.paths.list, url + '\n', callback());
 };
 
 exports.isUrlArchived = function(url, callback) {
   //look to see if the site is archieved
-  fs.readFile(path.join(__dirname, '../archives/sites/sites.txt'), 'utf8', function(err, contents) {
-    var arr = contents.split('\n');
-    console.log(arr);
-    console.log(_.indexOf(arr, url) === -1);
-    if (_.indexOf(arr, url) === -1) {
-      callback(false);
-      console.log('error');
-    } else {
+  var file = url.toString();
+  fs.exists(path.join(exports.paths.archivedSites, '../' + file), function(exists) {
+    console.log('exists', exists);
+    if (exists) {
       callback(true);
+    } else {
+      callback(false);
     }
   });
+  // fs.readFile(exports.paths.archivedSites, 'utf8', function(err, contents) {
+  //   console.log('ERR', err);
+  //   //var arr = contents.split('\n');
+  //   //console.log(_.indexOf(arr, url) === -1);
+  //   // if (_.indexOf(arr, url) === -1) {
+  //   //   callback(false);
+  //   //   console.log('error');
+  //   // } else {
+  //   //   callback(true);
+  //   // }
+  // });
 };
 
 exports.downloadUrls = function(urls) {
   //fetch url from that url
     //save url with updated links and sources
-    //just image sources to update?
+    //just image sources to update? these don't really have to work
     //update links to other parts of the domain?
+  _.each(urls, function(url) {
+    var file = fs.createReadStream(url);
+    // console.log('CREATEFILEurl', url);
+    // console.log('file', file);
+    http.get('www.google.com', (response) => {
+      console.log('response', response);
+      console.log('Inside');
+      console.log('url', url);
+      file.pipe(response);
+    });     
+  });
+
 };
