@@ -26,16 +26,48 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+  //look through list in site.text
+  //perform callback on all elements (maybe)
+
+  // input: callback with urls as inputs (string format?)
+
+  // output: an array of urls?
+  fs.readFile('./web/archives/sites.txt', function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    //console.log('req', res);
+    res.write(data);
+    res.end();
+  });
 };
 
 exports.isUrlInList = function(url, callback) {
+  //look through list of for given url 
+  //return true if url exists
+  //else false
+  fs.open('./web/archives/sites.txt', function(err, data) {
+    //console.log('req', res);
+    fs.exists(url, function() {
+      if (exists) {
+        callback(true);
+      } else {
+        callback(false);
+      }
+    });
+  });
 };
 
 exports.addUrlToList = function(url, callback) {
+  //given a url from index.html inupt
+  //add url to list of sites that worker function to retrieve
 };
 
 exports.isUrlArchived = function(url, callback) {
+  //look to see if the site is archieved
 };
 
 exports.downloadUrls = function(urls) {
+  //fetch url from that url
+    //save url with updated links and sources
+    //just image sources to update?
+    //update links to other parts of the domain?
 };
