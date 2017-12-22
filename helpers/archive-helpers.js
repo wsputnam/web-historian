@@ -68,7 +68,6 @@ exports.isUrlInList = function(url, callback) { // <-------------------- we chea
   // }
 //---------------------------------------------------
   fs.readFile(exports.paths.list, 'utf8', function(err, contents) {
-    console.log('error', err);
     var arr = contents.split('\n');
     //console.log('url exists:', _.indexOf(arr, url) === -1, 'arr: ', arr, 'url: ', url);
     if (_.indexOf(arr, url) === -1) {
@@ -92,7 +91,6 @@ exports.isUrlArchived = function(url, callback) {
   //look to see if the site is archieved
   var file = url.toString();
   fs.exists(path.join(exports.paths.archivedSites, '../' + file), function(exists) {
-    console.log('exists', exists);
     if (exists) {
       callback(true);
     } else {
@@ -111,22 +109,36 @@ exports.isUrlArchived = function(url, callback) {
   //   // }
   // });
 };
-
+const URL = require('url');
 exports.downloadUrls = function(urls) {
   //fetch url from that url
     //save url with updated links and sources
     //just image sources to update? these don't really have to work
     //update links to other parts of the domain?
   _.each(urls, function(url) {
-    var file = fs.createReadStream(url);
+    var file = fs.createWriteStream(path.join(exports.paths.archivedSites, url));
     // console.log('CREATEFILEurl', url);
     // console.log('file', file);
-    http.get('www.google.com', (response) => {
-      console.log('response', response);
-      console.log('Inside');
-      console.log('url', url);
-      file.pipe(response);
-    });     
-  });
+    //var tempUrl = new URL(url);
 
+    console.log('INSIDE EACH LOOP, url is', url);
+    if(url !== ".DS_Store"){
+      http.get('http://' + url, function(response) {
+        response.setEncoding('utf8');
+        //console.log('RESPONSE: ',response);
+        // console.log('response', response);
+        // console.log('Inside');
+        //response.writeHead(302, {'Content-Type': 'text/html'});
+        // console.log('url', url);
+        // var body = '';
+        // response.on('data', function(chunk) {
+        //   body += chunk;
+        // });
+        response.on('end', function() {
+          response.pipe(file);
+          console.log('file', file);
+        });
+      });     
+    }
+  });
 };
