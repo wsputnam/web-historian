@@ -90,8 +90,8 @@ exports.addUrlToList = function(url, callback) {
 
 exports.isUrlArchived = function(url, callback) {
   //look to see if the site is archieved
-  var file = url.toString();
-  fs.exists(path.join(exports.paths.archivedSites, '../' + file), function(exists) {
+  // var file = url.toString();
+  fs.exists(path.join(exports.paths.archivedSites, url), function(exists) {
     if (exists) {
       callback(true);
     } else {

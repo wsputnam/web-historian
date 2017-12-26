@@ -41,7 +41,6 @@ exports.handleRequest = function (req, res) {
         
         if (err) {
           throw err;
-          res.end('ERROR 404');
         } else {
           res.writeHead(302, {'Content-Type': 'text/html'});
           console.log('Saved!');
