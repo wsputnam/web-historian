@@ -50,7 +50,7 @@ exports.readListOfUrls = function(callback) {
   });
 };
 
-exports.isUrlInList = function(url, callback) { // <-------------------- we cheated
+exports.isUrlInList = function(url, callback) { 
   //look through list of for given url 
   //return true if url exists
   //else false
@@ -69,7 +69,6 @@ exports.isUrlInList = function(url, callback) { // <-------------------- we chea
 //---------------------------------------------------
   fs.readFile(exports.paths.list, 'utf8', function(err, contents) {
     var arr = contents.split('\n');
-    //console.log('url exists:', _.indexOf(arr, url) === -1, 'arr: ', arr, 'url: ', url);
     if (_.indexOf(arr, url) === -1) {
       callback(false);
       console.log('error');
@@ -84,7 +83,9 @@ exports.addUrlToList = function(url, callback) {
   //given a url from index.html inupt
   //add url to list of sites that worker function to retrieve
   //console.log(url, callback)
-  fs.appendFile(exports.paths.list, url + '\n', callback());
+  fs.appendFile(exports.paths.list, url + '\n', function(error, file) {
+    callback(file);
+  });
 };
 
 exports.isUrlArchived = function(url, callback) {
@@ -97,17 +98,7 @@ exports.isUrlArchived = function(url, callback) {
       callback(false);
     }
   });
-  // fs.readFile(exports.paths.archivedSites, 'utf8', function(err, contents) {
-  //   console.log('ERR', err);
-  //   //var arr = contents.split('\n');
-  //   //console.log(_.indexOf(arr, url) === -1);
-  //   // if (_.indexOf(arr, url) === -1) {
-  //   //   callback(false);
-  //   //   console.log('error');
-  //   // } else {
-  //   //   callback(true);
-  //   // }
-  // });
+
 };
 const URL = require('url');
 exports.downloadUrls = function(urls) {
@@ -117,9 +108,7 @@ exports.downloadUrls = function(urls) {
     //update links to other parts of the domain?
   _.each(urls, function(url) {
     var file = fs.createWriteStream(path.join(exports.paths.archivedSites, url));
-    // console.log('CREATEFILEurl', url);
-    // console.log('file', file);
-    //var tempUrl = new URL(url);
+
 
     console.log('INSIDE EACH LOOP, url is', url);
     if(url !== ".DS_Store"){

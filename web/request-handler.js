@@ -13,7 +13,7 @@ exports.handleRequest = function (req, res) {
     //console.log(req)
 
   // if req.url pathname is /, do this
-    var testResult = req.url.indexOf('.') === -1;
+    // var testResult = req.url.indexOf('.') === -1;
     if (req.url.indexOf('.') === -1 && req.url !== '/') {
       res.writeHead(404);
       res.end();
